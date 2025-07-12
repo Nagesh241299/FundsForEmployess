@@ -44,6 +44,25 @@
       color: #888;
       font-style: italic;
     }
+    /* Style for the total row */
+    tfoot td {
+      font-weight: bold;
+      background-color: #dcedc8;
+      border-top: 2px solid #66bb6a;
+    }
+    /* Back to home link style */
+    .back-home {
+      display: block;
+      margin: 25px auto 0;
+      text-align: center;
+      color: #185a9d;
+      font-weight: 600;
+      text-decoration: none;
+      max-width: 600px;
+    }
+    .back-home:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -61,7 +80,17 @@
       <tbody>
         <tr><td colspan="4">Loading...</td></tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="1">Total</td>
+          <td id="totalAmount">₹0</td>
+          <td colspan="2"></td>
+        </tr>
+      </tfoot>
     </table>
+
+    <!-- Back to Home link -->
+    <a href="index.html" class="back-home">← Back to Home</a>
   </div>
 
   <script>
@@ -87,14 +116,20 @@
         const tbody = document.querySelector("#loanTable tbody");
         tbody.innerHTML = "";
 
+        let totalAmount = 0;
+
         rows.forEach(row => {
-          const [name, amount, status, date] = row.split(',');
+          const [name, amountStr, status, date] = row.split(',');
+
+          // Parse amount safely
+          const amount = parseFloat(amountStr.trim()) || 0;
+          totalAmount += amount;
 
           const tr = document.createElement("tr");
 
           tr.innerHTML = `
             <td>${name.trim()}</td>
-            <td>₹${amount.trim()}</td>
+            <td>₹${amount.toLocaleString()}</td>
             <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
             <td>${formatDate(date.trim())}</td>
           `;
@@ -104,10 +139,14 @@
 
         if (tbody.children.length === 0) {
           tbody.innerHTML = `<tr><td colspan="4">No loans found.</td></tr>`;
+          document.getElementById("totalAmount").textContent = "₹0";
+        } else {
+          document.getElementById("totalAmount").textContent = `₹${totalAmount.toLocaleString()}`;
         }
       } catch (err) {
         const tbody = document.querySelector("#loanTable tbody");
         tbody.innerHTML = `<tr><td colspan="4">⚠️ Failed to load data.</td></tr>`;
+        document.getElementById("totalAmount").textContent = "₹0";
         console.error("Error loading loan data:", err);
       }
     }
