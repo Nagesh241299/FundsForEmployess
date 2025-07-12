@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loan Interest Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      background-color: #f9f9f9;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+    #result {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      margin-top: 15px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Funds For Employess Loan Interest Calculator</h2>
+
+  <label for="amount">Amount given (₹):</label>
+  <input type="number" id="amount" placeholder="Enter amount" required>
+
+  <label for="startDate">Date money was given:</label>
+  <input type="date" id="startDate" required>
+
+  <button onclick="calculateDue()">Calculate Due Amount</button>
+
+    <!-- Back to Home link -->
+  <a href="index.html" style="display: block; margin-top: 20px; text-align: center; color: #185a9d; text-decoration: none; font-weight: 600;">
+    ← Back to Home
+  </a>
+
+  <div id="result"></div>
+
+  <script>
+    function calculateDue() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const startDateInput = document.getElementById("startDate").value;
+      const resultBox = document.getElementById("result");
+
+      if (!amount || !startDateInput) {
+        resultBox.innerHTML = "❗ Please enter both amount and date.";
+        return;
+      }
+
+      const startDate = new Date(startDateInput);
+      const today = new Date();
+
+      const diffTime = today - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      const freeDays = 15;
+      const chargeableDays = diffDays > freeDays ? diffDays - freeDays : 0;
+      const penalty = chargeableDays * 10;
+      const totalDue = amount + penalty;
+
+      resultBox.innerHTML = `
+        <strong>Days passed:</strong> ${diffDays}<br>
+        <strong>Chargeable days (after 15):</strong> ${chargeableDays}<br>
+        <strong>Penalty (&#8377;10/day):</strong> &#8377;${penalty}<br>
+        <strong>Total Amount Due:</strong> <span style="color: green;"><strong>&#8377;${totalDue}</strong></span>
+      `;
+    }
+  </script>
+
+</body>
+</html>
+

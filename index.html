@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gradient Theme</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #89f7fe, #66a6ff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    a {
+      display: block; /* change from inline-block to block */
+      margin: 12px 0;
+      padding: 14px 30px;
+      font-weight: bold;
+      background: #66a6ff;
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    a:hover {
+      background: #4b8be0;
+      transform: translateY(-3px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Funds For Employee🏦</h1>
+    <a href="available-balance.html">Available Balance💸</a>
+    <a href="loan-details.html">Loan Calculator📱</a>
+    <a href="loan-summary.html">Loan Summary📚</a>
+
+  </div>
+</body>
+</html>

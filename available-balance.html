@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Available Balance</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f6fc;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .balance-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      width: 350px;
+    }
+
+    h1 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .label {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #007BFF;
+    }
+
+    .grand-total .value {
+      color: #28a745;
+    }
+
+    .last-updated {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 30px;
+      text-decoration: none;
+      color: #007BFF;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="balance-box">
+    <h1>Funds Overview</h1>
+
+    <div class="section grand-total">
+      <div class="label">Grand Total</div>
+      <div class="value" id="grandTotal">₹ --</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Loan Distributed (80%)</div>
+      <div class="value" id="loanDistributed">₹ --</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Available Balance (20%)</div>
+      <div class="value" id="availableBalance">₹ --</div>
+    </div>
+
+    <div class="last-updated">Last updated: July 12, 2025</div>
+    <a href="index.html">← Back to Home</a>
+  </div>
+
+  <script>
+    // ✅ Only update this one value:
+    const grandTotal = 60000;
+
+    // Fixed ratio calculation
+    const loanDistributed = grandTotal * 0.80;
+    const availableBalance = grandTotal - loanDistributed;
+
+    // Format and display
+    document.getElementById("grandTotal").textContent = "₹ " + grandTotal.toLocaleString("en-IN", {minimumFractionDigits: 2});
+    document.getElementById("loanDistributed").textContent = "₹ " + loanDistributed.toLocaleString("en-IN", {minimumFractionDigits: 2});
+    document.getElementById("availableBalance").textContent = "₹ " + availableBalance.toLocaleString("en-IN", {minimumFractionDigits: 2});
+  </script>
+</body>
+</html>
