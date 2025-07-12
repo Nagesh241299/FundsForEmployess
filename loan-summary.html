@@ -1,42 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Working On It</title>
+  <meta charset="UTF-8" />
+  <title>Loan Summary (Table View)</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 400px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f6fc;
+      padding: 30px;
+    }
+    .container {
+      max-width: 600px;
       margin: auto;
-      background-color: #f9f9f9;
-    }
-    input, button {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-    }
-    #result {
       background: #fff;
-      padding: 15px;
-      border: 1px solid #ccc;
-      margin-top: 15px;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 16px;
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #66bb6a;
+      color: white;
+      border-radius: 8px 8px 0 0;
+    }
+    tbody tr:hover {
+      background-color: #e8f5e9;
+    }
+    .status-cleared {
+      color: #888;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>💼 Loan Summary (Table)</h2>
+    <table id="loanTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Amount (₹)</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="4">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-  <h2>Working On It</h2>
+  <script>
+    const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vSbly161FUfzv8lvXmdwaOkZGVagsnxYbtN4s1Yfc5bqC7cPX0SUA9xZmheeSl-1L3v94ZRgwj4emIb/pub?output=csv");
 
+    function formatDate(inputDate) {
+      const date = new Date(inputDate);
+      if (isNaN(date)) return inputDate;
+      return date.toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
 
+    async function loadLoans() {
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error("Network response was not ok");
+        const text = await res.text();
+        const rows = text.trim().split('\n').slice(1); // skip header row
+
+        const tbody = document.querySelector("#loanTable tbody");
+        tbody.innerHTML = "";
+
+        rows.forEach(row => {
+          const [name, amount, status, date] = row.split(',');
+
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+            <td>${name.trim()}</td>
+            <td>₹${amount.trim()}</td>
+            <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
+            <td>${formatDate(date.trim())}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        if (tbody.children.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4">No loans found.</td></tr>`;
+        }
+      } catch (err) {
+        const tbody = document.querySelector("#loanTable tbody");
+        tbody.innerHTML = `<tr><td colspan="4">⚠️ Failed to load data.</td></tr>`;
+        console.error("Error loading loan data:", err);
+      }
+    }
+
+    loadLoans();
+  </script>
 </body>
 </html>
-
