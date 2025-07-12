@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Available Balance</title>
+  <title>Funds Overview</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -15,7 +15,7 @@
       align-items: center;
     }
 
-    .balance-box {
+    .box {
       background: white;
       padding: 40px;
       border-radius: 12px;
@@ -24,35 +24,12 @@
       width: 350px;
     }
 
-    h1 {
-      margin-bottom: 25px;
-      color: #333;
-    }
-
-    .section {
-      margin-bottom: 20px;
-    }
-
-    .label {
-      font-size: 16px;
-      color: #666;
-    }
-
-    .value {
-      font-size: 28px;
-      font-weight: bold;
-      color: #007BFF;
-    }
-
-    .grand-total .value {
-      color: #28a745;
-    }
-
-    .last-updated {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #777;
-    }
+    h1 { margin-bottom: 25px; color: #333; }
+    .section { margin-bottom: 20px; }
+    .label { font-size: 16px; color: #666; }
+    .value { font-size: 28px; font-weight: bold; color: #007BFF; }
+    .grand .value { color: #28a745; }
+    .last-updated { margin-top: 20px; font-size: 14px; color: #777; }
 
     a {
       display: inline-block;
@@ -67,40 +44,70 @@
   </style>
 </head>
 <body>
-  <div class="balance-box">
+  <div class="box">
     <h1>Funds Overview</h1>
 
-    <div class="section grand-total">
+    <div class="section grand">
       <div class="label">Grand Total</div>
       <div class="value" id="grandTotal">₹ --</div>
     </div>
 
     <div class="section">
-      <div class="label">Loan Distributed (80%)</div>
+      <div class="label">Loan Distributed</div>
       <div class="value" id="loanDistributed">₹ --</div>
     </div>
 
     <div class="section">
-      <div class="label">Available Balance (20%)</div>
+      <div class="label">Available Balance</div>
       <div class="value" id="availableBalance">₹ --</div>
     </div>
 
-    <div class="last-updated">Last updated: July 12, 2025</div>
+    <div class="last-updated" id="lastUpdated">Last updated: --</div>
     <a href="index.html">← Back to Home</a>
   </div>
 
   <script>
-    // ✅ Only update this one value:
-    const grandTotal = 64750;
+    const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vTXey37x_A-bhzuL9-_4vMRbO-UTpTDN6ObSyG0XZAH6ajRC0e0K4e9mtW8k6LUYliW3uK3kgLhrV_t/pub?output=csv");
 
-    // Fixed ratio calculation
-    const loanDistributed = grandTotal * 0.80;
-    const availableBalance = grandTotal - loanDistributed;
+    function displayMoney(id, value) {
+      document.getElementById(id).textContent = "₹ " + value.toLocaleString("en-IN", { minimumFractionDigits: 2 });
+    }
 
-    // Format and display
-    document.getElementById("grandTotal").textContent = "₹ " + grandTotal.toLocaleString("en-IN", {minimumFractionDigits: 2});
-    document.getElementById("loanDistributed").textContent = "₹ " + loanDistributed.toLocaleString("en-IN", {minimumFractionDigits: 2});
-    document.getElementById("availableBalance").textContent = "₹ " + availableBalance.toLocaleString("en-IN", {minimumFractionDigits: 2});
+    async function loadData() {
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error("Network error");
+        const text = await res.text();
+        const rows = text.trim().split("\n");
+        const data = {};
+
+        rows.forEach(row => {
+          const [key, val] = row.split(",");
+          data[key.trim()] = parseFloat(val.trim());
+        });
+
+        const grandTotal = data["grandTotal"] || 0;
+        const loanDistributed = data["loanDistributed"] || 0;
+        const available = grandTotal - loanDistributed;
+
+        displayMoney("grandTotal", grandTotal);
+        displayMoney("loanDistributed", loanDistributed);
+        displayMoney("availableBalance", available);
+
+        document.getElementById("lastUpdated").textContent = "Last updated: " +
+          new Date().toLocaleDateString("en-IN", {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+      } catch (e) {
+        console.error("Error loading data:", e);
+        document.getElementById("grandTotal").textContent = "⚠️ Error";
+        document.getElementById("loanDistributed").textContent = "--";
+        document.getElementById("availableBalance").textContent = "--";
+      }
+    }
+
+    loadData();
   </script>
 </body>
 </html>
