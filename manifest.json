@@ -1,7 +1,7 @@
 {
   "name": "Funs For Employee",
   "short_name": "Funs For Employee",
-  "start_url": "FundsForFriends/index.html",
+  "start_url": "/FundsForFriends/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#185a9d",
