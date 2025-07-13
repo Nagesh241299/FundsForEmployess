@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loan Summary (Table View)</title>
   <style>
     body {
@@ -13,48 +14,62 @@
       flex-direction: column;
       align-items: center;
     }
+
     .container {
       max-width: 600px;
+      width: 100%;
       margin: auto;
       background: #fff;
       padding: 25px;
       border-radius: 16px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
+
     h2 {
       text-align: center;
       color: #2e7d32;
       margin-bottom: 20px;
     }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 16px;
+      min-width: 500px; /* ensures table is scrollable on small screens */
     }
+
     th, td {
       padding: 12px 15px;
       border-bottom: 1px solid #ddd;
       text-align: left;
     }
+
     th {
       background-color: #66bb6a;
       color: white;
       border-radius: 8px 8px 0 0;
     }
+
     tbody tr:hover {
       background-color: #e8f5e9;
     }
+
     .status-cleared {
       color: #888;
       font-style: italic;
     }
-    /* Style for the total row */
+
     tfoot td {
       font-weight: bold;
       background-color: #dcedc8;
       border-top: 2px solid #66bb6a;
     }
-    /* Back to home link style */
+
     .back-home {
       display: block;
       margin: 25px auto 0;
@@ -64,41 +79,62 @@
       text-decoration: none;
       max-width: 600px;
     }
+
     .back-home:hover {
       text-decoration: underline;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      th, td {
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>💼 Loan Summary (Table)</h2>
-    <table id="loanTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Amount (₹)</th>
-          <th>Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td colspan="4">Loading...</td></tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="1">Total</td>
-          <td id="totalAmount">₹0</td>
-          <td colspan="2"></td>
-        </tr>
-      </tfoot>
-    </table>
 
-    <!-- Back to Home link -->
+    <div class="table-container">
+      <table id="loanTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Amount (₹)</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4">Loading...</td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="1">Total</td>
+            <td id="totalAmount">₹0</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
     <a href="index.html" class="back-home">← Back to Home</a>
   </div>
 
   <script>
-    const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://docs.google.com/spreadsheets/d/e/2PACX-1vSbly161FUfzv8lvXmdwaOkZGVagsnxYbtN4s1Yfc5bqC7cPX0SUA9xZmheeSl-1L3v94ZRgwj4emIb/pub?output=csv");
+    const CSV_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vSbly161FUfzv8lvXmdwaOkZGVagsnxYbtN4s1Yfc5bqC7cPX0SUA9xZmheeSl-1L3v94ZRgwj4emIb/pub?output=csv"
+    );
 
     function formatDate(inputDate) {
       const date = new Date(inputDate);
@@ -125,7 +161,6 @@
         rows.forEach(row => {
           const [name, amountStr, status, date] = row.split(',');
 
-          // Parse amount safely
           const amount = parseFloat(amountStr.trim()) || 0;
           totalAmount += amount;
 
