@@ -6,9 +6,9 @@ self.addEventListener("install", function (e) {
         "/index.html",
         "/loan-details.html",
         "/available-balance.html",
-        //"/style.css",  // if used
-        // "/icon-192.png",
-        // "/icon-512.png"
+        "/style.css",  // if used
+         "/icon-192.png",
+         "/icon-512.png"
       ]);
     })
   );
