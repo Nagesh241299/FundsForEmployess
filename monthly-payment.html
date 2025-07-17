@@ -115,6 +115,48 @@
       text-align: center;
       margin-top: 20px;
     }
+
+    /* Responsive styling */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      table th, table td {
+        padding: 10px;
+      }
+
+      #qr img {
+        max-width: 150px;
+      }
+
+      .btn {
+        padding: 8px 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.5em;
+      }
+
+      h3 {
+        font-size: 1.3em;
+      }
+
+      table th, table td {
+        padding: 8px;
+        font-size: 14px;
+      }
+
+      .footer button {
+        font-size: 0.9em;
+      }
+
+      #qr img {
+        max-width: 120px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -197,6 +239,8 @@
         const lateFee = person.paid ? person.lateFee : getLateFee(today);
         const totalAmount = 500 + lateFee;
 
+        const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
+
         row.innerHTML = `
             <td>${person.name}</td>
             <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
@@ -214,11 +258,11 @@
       });
     }
 
-    function markAsPaid(index) {
+    function handleUPIClick(index, lateFee) {
       paymentData[index].paid = true;
       paymentData[index].paidDate = new Date().toLocaleDateString();
-      paymentData[index].lateFee = getLateFee(paymentData[index].paidDate);
-      renderTable(); // Re-render the table to update the status
+      paymentData[index].lateFee = lateFee;
+      setTimeout(renderTable, 1000); // slight delay to reflect payment
     }
 
     function exportToExcel() {
