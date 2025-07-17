@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friends Payment Tracker</title>
+    <title>QR Code Payment</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <style>
         * {
@@ -20,6 +20,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             font-size: 16px;
         }
@@ -29,28 +30,14 @@
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 40px;
-            margin-top: 50px;
-            width: 95%;
-            max-width: 1000px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-        }
-
-        h2,
-        h3 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
-        #qr {
-            text-align: center;
-            margin-bottom: 30px;
         }
 
         #qr img {
             width: 100%;
-            max-width: 200px;
+            max-width: 250px;
             border-radius: 12px;
             transition: transform 0.3s ease;
             cursor: pointer;
@@ -60,28 +47,14 @@
             transform: scale(1.05);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        h2 {
             margin-bottom: 20px;
-            border-radius: 8px;
-            overflow: hidden;
+            font-size: 2em;
         }
 
-        th,
-        td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.2);
-            font-weight: bold;
-        }
-
-        tr:hover {
-            background: rgba(255, 255, 255, 0.1);
+        p {
+            font-size: 1.2em;
+            margin-top: 10px;
         }
 
         .btn {
@@ -93,76 +66,12 @@
             cursor: pointer;
             text-decoration: none;
             transition: background-color 0.3s ease;
-            display: inline-block;
+            margin-top: 20px;
+            font-size: 1.2em;
         }
 
         .btn:hover {
             background-color: #02a88c;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        /* Responsive styling */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            table th,
-            table td {
-                padding: 10px;
-            }
-
-            #qr img {
-                max-width: 150px;
-            }
-
-            .btn {
-                padding: 8px 15px;
-            }
-
-            h2 {
-                font-size: 1.8em;
-            }
-
-            h3 {
-                font-size: 1.6em;
-            }
-
-            .footer {
-                margin-top: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h2 {
-                font-size: 1.5em;
-            }
-
-            h3 {
-                font-size: 1.3em;
-            }
-
-            table th,
-            table td {
-                padding: 8px;
-                font-size: 14px;
-            }
-
-            .footer button {
-                font-size: 0.9em;
-            }
-
-            #qr img {
-                max-width: 120px;
-            }
-
-            .btn {
-                padding: 6px 12px;
-            }
         }
     </style>
 </head>
@@ -170,7 +79,7 @@
 <body>
 
     <div class="container">
-        <h2>Monthly Payment </h2>
+        <h2>Payment Tracker</h2>
 
         <div id="qr">
             <a href="javascript:void(0)" onclick="openUPIPayment()">
@@ -179,42 +88,21 @@
             <p>Click or Scan to Pay ₹500</p>
         </div>
 
-        <!-- <h3>Friends Payment Tracker</h3> -->
-<!-- 
-        <table id="paymentTable">
-            <thead>
-                <tr>
-                    <th>Friend</th>
-                    <th>Paid Date</th>
-                    <th>Late Fee</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"> -->
-                <!-- JavaScript will populate rows -->
-            <!-- </tbody>
-        </table> -->
-
-        <!-- <div class="footer">
-            <button class="btn" onclick="exportToExcel()">Export to Excel</button>
-        </div>
-    </div> -->
+        <a href="javascript:void(0)" class="btn" onclick="openUPIPayment()">Pay Now</a>
+    </div>
 
     <script>
-        const friends = [
-            "Sahil", "Nagesh", "Vipul", "Niral", "Vishal",
-            "Ganesh", "Vicky", "Roshan", "Akshay", "Ajit", "Niral"
-        ];
+        // Function to open UPI payment
+        function openUPIPayment() {
+            const lateFee = getLateFee();
+            const totalAmount = 500 + lateFee; // ₹500 + any applicable late fee
 
-        const paymentData = friends.map(name => ({
-            name,
-            paidDate: null,
-            lateFee: 0
-        }));
+            const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
 
-        const tableBody = document.getElementById("tableBody");
+            window.location.href = upiLink; // Redirect to the UPI payment link
+        }
 
-        // Function to calculate late fee
+        // Function to calculate late fee (example logic)
         function getLateFee() {
             const dueDate = new Date();
             dueDate.setDate(5); // Due date is 5th of the month
@@ -228,67 +116,6 @@
             const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
             return daysLate * 10; // ₹10 per day late fee
         }
-
-        // // Function to open UPI payment with calculated late fee
-        // function openUPIPayment() {
-        //     const lateFee = getLateFee();
-        //     const totalAmount = 500 + lateFee;
-
-        //     const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
-
-        //     window.location.href = upiLink; // Open UPI app with calculated link
-        // }
-
-        // // Function to render the table
-        // function renderTable() {
-        //     tableBody.innerHTML = "";
-
-        //     paymentData.forEach((person, index) => {
-        //         const row = document.createElement("tr");
-
-        //         // Calculate late fee for each friend
-        //         const lateFee = getLateFee();
-        //         const totalAmount = 500 + lateFee;
-
-        //         row.innerHTML = `
-        //             <td>${person.name}</td>
-        //             <td>${person.paidDate || '-'}</td>
-        //             <td>₹${person.lateFee || lateFee}</td>
-        //             <td>
-        //                 ${person.paidDate
-        //                     ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
-        //                     : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>`
-        //                 }
-        //             </td>
-        //         `;
-
-        //         tableBody.appendChild(row);
-        //     });
-        // }
-
-        // // Function to mark as paid
-        // function markAsPaid(index) {
-        //     paymentData[index].paidDate = new Date().toLocaleDateString();
-        //     paymentData[index].lateFee = getLateFee(); // Recalculate late fee based on the payment date
-        //     renderTable(); // Re-render the table to update the status
-        // }
-
-        // // Export to Excel function
-        // function exportToExcel() {
-        //     let csv = "Friend,Paid Date,Late Fee\n";
-        //     paymentData.forEach(p => {
-        //         csv += `${p.name},${p.paidDate || '-'},${p.lateFee}\n`;
-        //     });
-
-        //     const blob = new Blob([csv], { type: 'text/csv' });
-        //     const url = URL.createObjectURL(blob);
-        //     const a = document.createElement("a");
-        //     a.setAttribute("href", url);
-        //     a.setAttribute("download", "friends_payment.csv");
-        //     a.click();
-        // }
-
-        // renderTable();
     </script>
 
 </body>
