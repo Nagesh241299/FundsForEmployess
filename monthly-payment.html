@@ -230,16 +230,18 @@
         const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
 
         row.innerHTML = `
-          <td>${person.name}</td>
-          <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
-          <td>${person.paidDate || '-'}</td>
-          <td>₹${person.paid ? person.lateFee : lateFee}</td>
-          <td>
-            ${person.paid
-              ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
-              : `<a class="btn" href="${upiLink}" target="_self">Click Here to Pay</a>`
-            }
-          </td>
+            <td>${person.name}</td>
+            <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
+            <td>${person.paidDate || '-'}</td>
+            <td>₹${person.paid ? person.lateFee : lateFee}</td>
+            <td>
+                ${person.paid
+                ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
+                : `<a class="btn" href="${upiLink}" target="_self" >
+                    Click Here to Pay Monthly
+                    </a>`
+                }
+            </td>
         `;
 
         tableBody.appendChild(row);
