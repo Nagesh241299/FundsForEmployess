@@ -224,7 +224,7 @@
       if (msLate <= 0) return 0;
 
       const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
-      return daysLate * 10;
+      return daysLate * 10; // Late fee is ₹10 per day
     }
 
     function renderTable() {
@@ -236,7 +236,7 @@
         const row = document.createElement("tr");
 
         // Real-time late fee
-        const lateFee = getLateFee(today);
+        const lateFee = person.paid ? person.lateFee : getLateFee(today);
         const totalAmount = 500 + lateFee;
 
         const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
