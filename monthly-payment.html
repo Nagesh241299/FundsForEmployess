@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Friends Payment Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
   <style>
@@ -30,6 +31,7 @@
       width: 90%;
       max-width: 1000px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
     }
 
     h2, h3 {
@@ -43,7 +45,8 @@
     }
 
     #qr img {
-      width: 200px;
+      width: 100%;
+      max-width: 200px;
       border-radius: 12px;
       transition: transform 0.3s ease;
       cursor: pointer;
@@ -106,6 +109,47 @@
     .footer {
       text-align: center;
       margin-top: 20px;
+    }
+
+    /* Responsive styling */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      table th, table td {
+        padding: 10px;
+      }
+
+      #qr img {
+        max-width: 150px;
+      }
+
+      .btn {
+        padding: 8px 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.5em;
+      }
+
+      h3 {
+        font-size: 1.2em;
+      }
+
+      .container {
+        margin-top: 20px;
+      }
+
+      table th, table td {
+        padding: 8px;
+      }
+
+      .footer button {
+        font-size: 0.9em;
+      }
     }
   </style>
 </head>
