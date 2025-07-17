@@ -58,9 +58,27 @@
       transform: scale(1.05);
     }
 
-    .footer {
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
       text-align: center;
-      margin-top: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .btn {
@@ -78,19 +96,32 @@
     .btn:hover {
       background-color: #02a88c;
     }
+
+    .badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 1em;
+    }
+
+    .paid {
+      background-color: #28a745;
+    }
+
+    .unpaid {
+      background-color: #dc3545;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+
   </style>
 </head>
 <body>
 
   <div class="container">
     <h2>Monthly Payment Tracker</h2>
-
-    <div id="qr">
-      <a href="javascript:void(0)" onclick="openUPIPayment()">
-        <img src="your-qr-code.jpeg" alt="QR Code" id="qrCodeImage">
-      </a>
-      <p>Click or Scan to Pay ₹500</p>
-    </div>
 
     <h3>Friends Payment Status</h3>
 
@@ -144,14 +175,17 @@
       return daysLate * 10; // ₹10 per day late fee
     }
 
-    // Function to open UPI payment with calculated late fee
-    function openUPIPayment() {
+    // Function to mark as paid
+    function markAsPaid(index) {
       const lateFee = getLateFee();
       const totalAmount = 500 + lateFee;
 
-      const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
+      paymentData[index].paid = true;
+      paymentData[index].paidDate = new Date().toLocaleDateString();
+      paymentData[index].lateFee = lateFee;
 
-      window.location.href = upiLink; // Open UPI app with calculated link
+      // Refresh table after marking as paid
+      renderTable();
     }
 
     // Function to render the table
@@ -165,8 +199,6 @@
         const lateFee = getLateFee();
         const totalAmount = 500 + lateFee;
 
-        const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
-
         row.innerHTML = `
           <td>${person.name}</td>
           <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
@@ -175,7 +207,7 @@
           <td>
             ${person.paid
               ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
-              : `<a class="btn" href="${upiLink}" target="_self">Click Here to Pay</a>`
+              : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>`
             }
           </td>
         `;
