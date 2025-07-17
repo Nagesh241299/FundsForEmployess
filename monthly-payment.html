@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Friends Payment Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-top: 50px;
+      width: 90%;
+      max-width: 1000px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    h2, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #qr {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    #qr img {
+      width: 200px;
+      border-radius: 12px;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    #qr img:hover {
+      transform: scale(1.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn {
+      background-color: #00c9a7;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background-color: #02a88c;
+    }
+
+    .badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.9em;
+    }
+
+    .paid {
+      background-color: #28a745;
+    }
+
+    .unpaid {
+      background-color: #dc3545;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Monthly Payment Tracker</h2>
+
+    <div id="qr">
+      <a href="upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=500&cu=INR"
+         onclick="if (!/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+           alert('Please open this link on your phone using a UPI app like Google Pay.');
+           return false;
+         }">
+        <img src="your-qr-code.jpeg" alt="QR Code">
+      </a>
+      <p>Click or Scan to Pay ₹500</p>
+    </div>
+
+    <h3>Friends Payment Status</h3>
+
+    <table id="paymentTable">
+      <thead>
+        <tr>
+          <th>Friend</th>
+          <th>Status</th>
+          <th>Paid Date</th>
+          <th>Late Fee</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- JavaScript will populate rows -->
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <button class="btn" onclick="exportToExcel()">Export to Excel</button>
+    </div>
+  </div>
+
+  <script>
+    const friends = [
+      "Sahil", "Nagesh", "Vipul", "Niral", "Vishal",
+      "Ganesh", "Vicky", "Roshan", "Akshay", "Ajit", "Niral"
+    ];
+
+    const paymentData = friends.map(name => ({
+      name,
+      paid: false,
+      paidDate: null,
+      lateFee: 0
+    }));
+
+    const tableBody = document.getElementById("tableBody");
+
+    function getLateFee(paymentDate) {
+      const dueDate = new Date();
+      dueDate.setDate(5); // Due on 5th of the month
+      dueDate.setHours(0, 0, 0, 0);
+
+      const payDate = new Date(paymentDate);
+      payDate.setHours(0, 0, 0, 0);
+
+      const msLate = payDate - dueDate;
+      if (msLate <= 0) return 0;
+
+      const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
+      return daysLate * 10;
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+
+      const today = new Date();
+
+      paymentData.forEach((person, index) => {
+        const row = document.createElement("tr");
+
+        // Real-time late fee
+        const lateFee = getLateFee(today);
+        const totalAmount = 500 + lateFee;
+
+        const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
+
+        row.innerHTML = `
+            <td>${person.name}</td>
+            <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
+            <td>${person.paidDate || '-'}</td>
+            <td>₹${person.paid ? person.lateFee : lateFee}</td>
+            <td>
+                ${person.paid
+                ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
+                : `<a class="btn" href="${upiLink}" target="_self" >
+                    Click Here to Pay Monthly
+                    </a>`
+                }
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function handleUPIClick(index, lateFee) {
+      paymentData[index].paid = true;
+      paymentData[index].paidDate = new Date().toLocaleDateString();
+      paymentData[index].lateFee = lateFee;
+      setTimeout(renderTable, 1000); // slight delay to reflect payment
+    }
+
+    function exportToExcel() {
+      let csv = "Friend,Status,Paid Date,Late Fee\n";
+      paymentData.forEach(p => {
+        csv += `${p.name},${p.paid ? 'Paid' : 'Unpaid'},${p.paidDate || '-'},${p.lateFee}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.setAttribute("href", url);
+      a.setAttribute("download", "friends_payment.csv");
+      a.click();
+    }
+
+    renderTable();
+  </script>
+
+</body>
+</html>
