@@ -115,13 +115,23 @@
       text-align: center;
       margin-top: 20px;
     }
-
   </style>
 </head>
 <body>
 
   <div class="container">
     <h2>Monthly Payment Tracker</h2>
+
+    <div id="qr">
+      <a href="upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=500&cu=INR"
+         onclick="if (!/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+           alert('Please open this link on your phone using a UPI app like Google Pay.');
+           return false;
+         }">
+        <img src="your-qr-code.jpeg" alt="QR Code">
+      </a>
+      <p>Click or Scan to Pay ₹500</p>
+    </div>
 
     <h3>Friends Payment Status</h3>
 
@@ -160,60 +170,55 @@
 
     const tableBody = document.getElementById("tableBody");
 
-    // Function to calculate late fee
-    function getLateFee() {
+    function getLateFee(paymentDate) {
       const dueDate = new Date();
-      dueDate.setDate(5); // Due date is 5th of the month
+      dueDate.setDate(5); // Due on 5th of the month
       dueDate.setHours(0, 0, 0, 0);
 
-      const today = new Date();
-      const msLate = today - dueDate;
+      const payDate = new Date(paymentDate);
+      payDate.setHours(0, 0, 0, 0);
 
+      const msLate = payDate - dueDate;
       if (msLate <= 0) return 0;
 
       const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
-      return daysLate * 10; // ₹10 per day late fee
+      return daysLate * 10; // Late fee is ₹10 per day
     }
 
-    // Function to mark as paid
-    function markAsPaid(index) {
-      const lateFee = getLateFee();
-      const totalAmount = 500 + lateFee;
-
-      paymentData[index].paid = true;
-      paymentData[index].paidDate = new Date().toLocaleDateString();
-      paymentData[index].lateFee = lateFee;
-
-      // Refresh table after marking as paid
-      renderTable();
-    }
-
-    // Function to render the table
     function renderTable() {
       tableBody.innerHTML = "";
+
+      const today = new Date();
 
       paymentData.forEach((person, index) => {
         const row = document.createElement("tr");
 
-        // Calculate late fee for each friend
-        const lateFee = getLateFee();
+        // Real-time late fee
+        const lateFee = person.paid ? person.lateFee : getLateFee(today);
         const totalAmount = 500 + lateFee;
 
         row.innerHTML = `
-          <td>${person.name}</td>
-          <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
-          <td>${person.paidDate || '-'}</td>
-          <td>₹${person.paid ? person.lateFee : lateFee}</td>
-          <td>
-            ${person.paid
-              ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
-              : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>`
-            }
-          </td>
+            <td>${person.name}</td>
+            <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
+            <td>${person.paidDate || '-'}</td>
+            <td>₹${person.paid ? person.lateFee : lateFee}</td>
+            <td>
+                ${person.paid
+                ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
+                : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>` 
+                }
+            </td>
         `;
 
         tableBody.appendChild(row);
       });
+    }
+
+    function markAsPaid(index) {
+      paymentData[index].paid = true;
+      paymentData[index].paidDate = new Date().toLocaleDateString();
+      paymentData[index].lateFee = getLateFee(paymentData[index].paidDate);
+      renderTable(); // Re-render the table to update the status
     }
 
     function exportToExcel() {
