@@ -86,48 +86,119 @@
     <h2>Monthly Payment Tracker</h2>
 
     <div id="qr">
-      <a href="#" id="upiLink" target="_blank">
-        <img src="your-qr-code.jpeg" alt="QR Code">
+      <a href="javascript:void(0)" onclick="openUPIPayment()">
+        <img src="your-qr-code.jpeg" alt="QR Code" id="qrCodeImage">
       </a>
-      <p>Click or Scan to Pay ₹500 + Late Fee (if any)</p>
+      <p>Click or Scan to Pay ₹500</p>
     </div>
 
+    <h3>Friends Payment Status</h3>
+
+    <table id="paymentTable">
+      <thead>
+        <tr>
+          <th>Friend</th>
+          <th>Status</th>
+          <th>Paid Date</th>
+          <th>Late Fee</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- JavaScript will populate rows -->
+      </tbody>
+    </table>
+
     <div class="footer">
-      <button class="btn" onclick="updateUPILink()">Generate UPI Link</button>
+      <button class="btn" onclick="exportToExcel()">Export to Excel</button>
     </div>
   </div>
 
   <script>
+    const friends = [
+      "Sahil", "Nagesh", "Vipul", "Niral", "Vishal",
+      "Ganesh", "Vicky", "Roshan", "Akshay", "Ajit", "Niral"
+    ];
+
+    const paymentData = friends.map(name => ({
+      name,
+      paid: false,
+      paidDate: null,
+      lateFee: 0
+    }));
+
+    const tableBody = document.getElementById("tableBody");
+
     // Function to calculate late fee
-    function calculateLateFee() {
+    function getLateFee() {
       const dueDate = new Date();
-      dueDate.setDate(5); // Due on 5th of the month
+      dueDate.setDate(5); // Due date is 5th of the month
       dueDate.setHours(0, 0, 0, 0);
 
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
       const msLate = today - dueDate;
-      if (msLate <= 0) return 0; // No late fee if before or on due date
+
+      if (msLate <= 0) return 0;
 
       const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
-      return daysLate * 10; // Late fee ₹10 per day
+      return daysLate * 10; // ₹10 per day late fee
     }
 
-    // Function to update the UPI link with dynamic late fee
-    function updateUPILink() {
-      const lateFee = calculateLateFee();
-      const totalAmount = 500 + lateFee; // ₹500 + Late Fee
+    // Function to open UPI payment with calculated late fee
+    function openUPIPayment() {
+      const lateFee = getLateFee();
+      const totalAmount = 500 + lateFee;
 
-      // Construct the UPI payment link with calculated total amount
       const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
 
-      // Update the UPI link href
-      document.getElementById("upiLink").setAttribute("href", upiLink);
-
-      // Alert user with the total amount
-      alert(`The total amount to be paid is ₹${totalAmount}. Click the QR code to make the payment.`);
+      window.location.href = upiLink; // Open UPI app with calculated link
     }
+
+    // Function to render the table
+    function renderTable() {
+      tableBody.innerHTML = "";
+
+      paymentData.forEach((person, index) => {
+        const row = document.createElement("tr");
+
+        // Calculate late fee for each friend
+        const lateFee = getLateFee();
+        const totalAmount = 500 + lateFee;
+
+        const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
+
+        row.innerHTML = `
+          <td>${person.name}</td>
+          <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
+          <td>${person.paidDate || '-'}</td>
+          <td>₹${person.paid ? person.lateFee : lateFee}</td>
+          <td>
+            ${person.paid
+              ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
+              : `<a class="btn" href="${upiLink}" target="_self">Click Here to Pay</a>`
+            }
+          </td>
+        `;
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function exportToExcel() {
+      let csv = "Friend,Status,Paid Date,Late Fee\n";
+      paymentData.forEach(p => {
+        csv += `${p.name},${p.paid ? 'Paid' : 'Unpaid'},${p.paidDate || '-'},${p.lateFee}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.setAttribute("href", url);
+      a.setAttribute("download", "friends_payment.csv");
+      a.click();
+    }
+
+    renderTable();
   </script>
 
 </body>
