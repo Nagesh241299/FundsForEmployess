@@ -170,7 +170,7 @@
 <body>
 
     <div class="container">
-        <h2>Monthly Payment Tracker</h2>
+        <h2>Monthly Payment </h2>
 
         <div id="qr">
             <a href="javascript:void(0)" onclick="openUPIPayment()">
@@ -179,22 +179,21 @@
             <p>Click or Scan to Pay ₹500</p>
         </div>
 
-        <h3>Friends Payment Status</h3>
-
+        <!-- <h3>Friends Payment Tracker</h3> -->
+<!-- 
         <table id="paymentTable">
             <thead>
                 <tr>
                     <th>Friend</th>
-                    <th>Status</th>
                     <th>Paid Date</th>
                     <th>Late Fee</th>
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="tableBody">
+            <tbody id="tableBody"> -->
                 <!-- JavaScript will populate rows -->
-            </tbody>
-        </table>
+            <!-- </tbody>
+        </table> -->
 
         <div class="footer">
             <button class="btn" onclick="exportToExcel()">Export to Excel</button>
@@ -209,7 +208,6 @@
 
         const paymentData = friends.map(name => ({
             name,
-            paid: false,
             paidDate: null,
             lateFee: 0
         }));
@@ -231,67 +229,66 @@
             return daysLate * 10; // ₹10 per day late fee
         }
 
-        // Function to open UPI payment with calculated late fee
-        function openUPIPayment() {
-            const lateFee = getLateFee();
-            const totalAmount = 500 + lateFee;
+        // // Function to open UPI payment with calculated late fee
+        // function openUPIPayment() {
+        //     const lateFee = getLateFee();
+        //     const totalAmount = 500 + lateFee;
 
-            const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
+        //     const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
 
-            window.location.href = upiLink; // Open UPI app with calculated link
-        }
+        //     window.location.href = upiLink; // Open UPI app with calculated link
+        // }
 
-        // Function to render the table
-        function renderTable() {
-            tableBody.innerHTML = "";
+        // // Function to render the table
+        // function renderTable() {
+        //     tableBody.innerHTML = "";
 
-            paymentData.forEach((person, index) => {
-                const row = document.createElement("tr");
+        //     paymentData.forEach((person, index) => {
+        //         const row = document.createElement("tr");
 
-                // Calculate late fee for each friend
-                const lateFee = getLateFee(person.paidDate);
-                const totalAmount = 500 + lateFee;
+        //         // Calculate late fee for each friend
+        //         const lateFee = getLateFee();
+        //         const totalAmount = 500 + lateFee;
 
-                row.innerHTML = `
-      <td>${person.name}</td>
-      <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
-      <td>${person.paidDate || '-'}</td>
-      <td>₹${person.paid ? person.lateFee : lateFee}</td>
-      <td>
-        ${person.paid
-                        ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
-                        : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>`
-                    }
-      </td>
-    `;
+        //         row.innerHTML = `
+        //             <td>${person.name}</td>
+        //             <td>${person.paidDate || '-'}</td>
+        //             <td>₹${person.lateFee || lateFee}</td>
+        //             <td>
+        //                 ${person.paidDate
+        //                     ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
+        //                     : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>`
+        //                 }
+        //             </td>
+        //         `;
 
-                tableBody.appendChild(row);
-            });
-        }
+        //         tableBody.appendChild(row);
+        //     });
+        // }
 
-        // Function to mark as paid
-        function markAsPaid(index) {
-            paymentData[index].paid = true;
-            paymentData[index].paidDate = new Date().toLocaleDateString();
-            paymentData[index].lateFee = getLateFee(paymentData[index].paidDate); // Recalculate late fee based on the payment date
-            renderTable(); // Re-render the table to update the status
-        }
+        // // Function to mark as paid
+        // function markAsPaid(index) {
+        //     paymentData[index].paidDate = new Date().toLocaleDateString();
+        //     paymentData[index].lateFee = getLateFee(); // Recalculate late fee based on the payment date
+        //     renderTable(); // Re-render the table to update the status
+        // }
 
-        function exportToExcel() {
-            let csv = "Friend,Status,Paid Date,Late Fee\n";
-            paymentData.forEach(p => {
-                csv += `${p.name},${p.paid ? 'Paid' : 'Unpaid'},${p.paidDate || '-'},${p.lateFee}\n`;
-            });
+        // // Export to Excel function
+        // function exportToExcel() {
+        //     let csv = "Friend,Paid Date,Late Fee\n";
+        //     paymentData.forEach(p => {
+        //         csv += `${p.name},${p.paidDate || '-'},${p.lateFee}\n`;
+        //     });
 
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.setAttribute("href", url);
-            a.setAttribute("download", "friends_payment.csv");
-            a.click();
-        }
+        //     const blob = new Blob([csv], { type: 'text/csv' });
+        //     const url = URL.createObjectURL(blob);
+        //     const a = document.createElement("a");
+        //     a.setAttribute("href", url);
+        //     a.setAttribute("download", "friends_payment.csv");
+        //     a.click();
+        // }
 
-        renderTable();
+        // renderTable();
     </script>
 
 </body>
