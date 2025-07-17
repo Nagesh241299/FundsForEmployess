@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friends Monthly Payment Tracker</title>
+    <title>Friends Payment Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <style>
         * {
@@ -41,30 +41,6 @@
             text-align: center;
             margin-bottom: 20px;
             font-size: 2em;
-        }
-
-        /* Month selector */
-        .month-selector {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-        }
-
-        .month-selector select,
-        .month-selector button {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: none;
-            background-color: #00c9a7;
-            color: white;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
-        .month-selector button:hover,
-        .month-selector select:hover {
-            background-color: #02a88c;
         }
 
         #qr {
@@ -196,25 +172,6 @@
     <div class="container">
         <h2>Monthly Payment Tracker</h2>
 
-        <!-- Month Selector Section -->
-        <div class="month-selector">
-            <select id="monthSelect">
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
-            </select>
-            <button onclick="filterByMonth()">Apply Month</button>
-        </div>
-
         <div id="qr">
             <a href="javascript:void(0)" onclick="openUPIPayment()">
                 <img src="your-qr-code.jpeg" alt="QR Code" id="qrCodeImage">
@@ -254,37 +211,34 @@
             name,
             paid: false,
             paidDate: null,
-            lateFee: 0,
-            month: "January" // Default to January
+            lateFee: 0
         }));
 
         const tableBody = document.getElementById("tableBody");
 
         // Function to calculate late fee
-        function getLateFee(paymentDate) {
+        function getLateFee() {
             const dueDate = new Date();
             dueDate.setDate(5); // Due date is 5th of the month
             dueDate.setHours(0, 0, 0, 0);
 
-            const payDate = new Date(paymentDate);
-            payDate.setHours(0, 0, 0, 0);
+            const today = new Date();
+            const msLate = today - dueDate;
 
-            const msLate = payDate - dueDate;
             if (msLate <= 0) return 0;
 
             const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
             return daysLate * 10; // ₹10 per day late fee
         }
 
-        // Function to filter table by month
-        function filterByMonth() {
-            const selectedMonth = document.getElementById("monthSelect").value;
-            paymentData.forEach(person => {
-                if (person.month !== selectedMonth) {
-                    person.paid = false; // reset the payment status for non-matching months
-                }
-            });
-            renderTable();
+        // Function to open UPI payment with calculated late fee
+        function openUPIPayment() {
+            const lateFee = getLateFee();
+            const totalAmount = 500 + lateFee;
+
+            const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
+
+            window.location.href = upiLink; // Open UPI app with calculated link
         }
 
         // Function to render the table
@@ -295,21 +249,21 @@
                 const row = document.createElement("tr");
 
                 // Calculate late fee for each friend
-                const lateFee = person.paid ? person.lateFee : getLateFee(person.paidDate);
+                const lateFee = getLateFee(person.paidDate);
                 const totalAmount = 500 + lateFee;
 
                 row.innerHTML = `
-                    <td>${person.name}</td>
-                    <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
-                    <td>${person.paidDate || '-'}</td>
-                    <td>₹${person.paid ? person.lateFee : lateFee}</td>
-                    <td>
-                        ${person.paid
-                            ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
-                            : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>`
-                        }
-                    </td>
-                `;
+      <td>${person.name}</td>
+      <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
+      <td>${person.paidDate || '-'}</td>
+      <td>₹${person.paid ? person.lateFee : lateFee}</td>
+      <td>
+        ${person.paid
+                        ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
+                        : `<button class="btn" onclick="markAsPaid(${index})">Mark as Paid</button>`
+                    }
+      </td>
+    `;
 
                 tableBody.appendChild(row);
             });
@@ -319,11 +273,10 @@
         function markAsPaid(index) {
             paymentData[index].paid = true;
             paymentData[index].paidDate = new Date().toLocaleDateString();
-            paymentData[index].lateFee = getLateFee(paymentData[index].paidDate);
+            paymentData[index].lateFee = getLateFee(paymentData[index].paidDate); // Recalculate late fee based on the payment date
             renderTable(); // Re-render the table to update the status
         }
 
-        // Export to Excel function
         function exportToExcel() {
             let csv = "Friend,Status,Paid Date,Late Fee\n";
             paymentData.forEach(p => {
@@ -338,16 +291,7 @@
             a.click();
         }
 
-        // Set the default month to current month
-        function setDefaultMonth() {
-            const currentMonth = new Date().toLocaleString('default', { month: 'long' });
-            document.getElementById("monthSelect").value = currentMonth;
-        }
-
-        // Initialize
-        setDefaultMonth();
         renderTable();
-
     </script>
 
 </body>
