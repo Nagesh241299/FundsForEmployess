@@ -58,27 +58,9 @@
       transform: scale(1.05);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    th, td {
-      padding: 12px;
+    .footer {
       text-align: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    th {
-      background: rgba(255, 255, 255, 0.2);
-      font-weight: bold;
-    }
-
-    tr:hover {
-      background: rgba(255, 255, 255, 0.1);
+      margin-top: 20px;
     }
 
     .btn {
@@ -96,67 +78,6 @@
     .btn:hover {
       background-color: #02a88c;
     }
-
-    .badge {
-      padding: 5px 12px;
-      border-radius: 15px;
-      font-size: 1em;
-    }
-
-    .paid {
-      background-color: #28a745;
-    }
-
-    .unpaid {
-      background-color: #dc3545;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    /* Responsive styling */
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-      }
-
-      table th, table td {
-        padding: 10px;
-      }
-
-      #qr img {
-        max-width: 150px;
-      }
-
-      .btn {
-        padding: 8px 15px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h2 {
-        font-size: 1.5em;
-      }
-
-      h3 {
-        font-size: 1.3em;
-      }
-
-      table th, table td {
-        padding: 8px;
-        font-size: 14px;
-      }
-
-      .footer button {
-        font-size: 0.9em;
-      }
-
-      #qr img {
-        max-width: 120px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -168,11 +89,28 @@
       <a href="javascript:void(0)" onclick="openUPIPayment()">
         <img src="your-qr-code.jpeg" alt="QR Code" id="qrCodeImage">
       </a>
-      <p>Click or Scan to Pay ₹500 + Late Fee (if any)</p>
+      <p>Click or Scan to Pay ₹500</p>
     </div>
 
+    <h3>Friends Payment Status</h3>
+
+    <table id="paymentTable">
+      <thead>
+        <tr>
+          <th>Friend</th>
+          <th>Status</th>
+          <th>Paid Date</th>
+          <th>Late Fee</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- JavaScript will populate rows -->
+      </tbody>
+    </table>
+
     <div class="footer">
-      <button class="btn" onclick="updateUPILink()">Generate UPI Link</button>
+      <button class="btn" onclick="exportToExcel()">Export to Excel</button>
     </div>
   </div>
 
@@ -194,7 +132,7 @@
     // Function to calculate late fee
     function getLateFee() {
       const dueDate = new Date();
-      dueDate.setDate(5); // Due on 5th of the month
+      dueDate.setDate(5); // Due date is 5th of the month
       dueDate.setHours(0, 0, 0, 0);
 
       const today = new Date();
@@ -230,18 +168,16 @@
         const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
 
         row.innerHTML = `
-            <td>${person.name}</td>
-            <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
-            <td>${person.paidDate || '-'}</td>
-            <td>₹${person.paid ? person.lateFee : lateFee}</td>
-            <td>
-                ${person.paid
-                ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
-                : `<a class="btn" href="${upiLink}" target="_self" >
-                    Click Here to Pay Monthly
-                    </a>`
-                }
-            </td>
+          <td>${person.name}</td>
+          <td><span class="badge ${person.paid ? 'paid' : 'unpaid'}">${person.paid ? 'Paid' : 'Unpaid'}</span></td>
+          <td>${person.paidDate || '-'}</td>
+          <td>₹${person.paid ? person.lateFee : lateFee}</td>
+          <td>
+            ${person.paid
+              ? `<span class="btn" style="background:#666;cursor:default;">Paid</span>`
+              : `<a class="btn" href="${upiLink}" target="_self">Click Here to Pay</a>`
+            }
+          </td>
         `;
 
         tableBody.appendChild(row);
@@ -261,6 +197,8 @@
       a.setAttribute("download", "friends_payment.csv");
       a.click();
     }
+
+    renderTable();
   </script>
 
 </body>
