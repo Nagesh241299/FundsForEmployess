@@ -21,6 +21,9 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            width: 100%;
+            flex-wrap: wrap;
+            text-align: center;
         }
 
         .container {
@@ -111,7 +114,36 @@
         .btn:hover {
             background-color: #02a88c;
         }
+
+        @media (max-width: 600px) {
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 25px 20px;
+            }
+
+            select {
+                font-size: 0.95rem;
+                padding: 12px 14px;
+            }
+
+            .btn {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+
+            #qr img {
+                max-width: 200px;
+            }
+
+            p {
+                font-size: 1em;
+            }
+        }
     </style>
+
 </head>
 
 <body>
@@ -120,7 +152,7 @@
 
         <div class="custom-select">
             <select id="monthSelect">
-                
+
                 <!-- months will be added via JavaScript -->
             </select>
         </div>
