@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QR Code Payment</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
     <style>
         * {
             box-sizing: border-box;
@@ -18,27 +18,70 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: #fff;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            font-size: 16px;
         }
 
         .container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
             text-align: center;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 25px;
+        }
+
+        .custom-select {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        select {
+            appearance: none;
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            outline: none;
+        }
+
+        select:focus {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        select option {
+            color: #000;
+        }
+
+        .custom-select::after {
+            content: "▼";
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 0.9rem;
+            color: #fff;
         }
 
         #qr img {
             width: 100%;
             max-width: 250px;
-            border-radius: 12px;
+            border-radius: 15px;
             transition: transform 0.3s ease;
             cursor: pointer;
         }
@@ -47,26 +90,21 @@
             transform: scale(1.05);
         }
 
-        h2 {
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
         p {
-            font-size: 1.2em;
-            margin-top: 10px;
+            font-size: 1.1em;
+            margin-top: 12px;
         }
 
         .btn {
             background-color: #00c9a7;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             text-decoration: none;
             transition: background-color 0.3s ease;
-            margin-top: 20px;
+            margin-top: 25px;
             font-size: 1.2em;
         }
 
@@ -77,47 +115,96 @@
 </head>
 
 <body>
-
     <div class="container">
-        <h2>Payment Tracker</h2>
+        <h2>Monthly Payment</h2>
+
+        <div class="custom-select">
+            <select id="monthSelect">
+                <option value="">-- Select Month --</option>
+                <!-- months will be added via JavaScript -->
+            </select>
+        </div>
 
         <div id="qr">
             <a href="javascript:void(0)" onclick="openUPIPayment()">
-                <img src="your-qr-code.jpeg" alt="QR Code" id="qrCodeImage">
+                <img src="your-qr-code.jpeg" alt="QR Code" />
             </a>
-            <p>Click or Scan to Pay ₹500</p>
+            <p id="amountText">Click or Scan to Pay ₹500</p>
         </div>
 
         <a href="javascript:void(0)" class="btn" onclick="openUPIPayment()">Pay Now</a>
     </div>
 
     <script>
-        // Function to open UPI payment
-        function openUPIPayment() {
-            const lateFee = getLateFee();
-            const totalAmount = 500 + lateFee; // ₹500 + any applicable late fee
+        const baseAmount = 500;
 
-            const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${totalAmount}&cu=INR`;
+        function generateLast5MonthsIncludingCurrent() {
+            const select = document.getElementById("monthSelect");
+            const today = new Date();
+            const currentMonthValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
 
-            window.location.href = upiLink; // Redirect to the UPI payment link
+            for (let i = 0; i < 5; i++) {
+                const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+                const label = d.toLocaleString("default", { month: "long", year: "numeric" });
+
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = label;
+
+                if (value === currentMonthValue) {
+                    option.selected = true;
+                }
+
+                select.appendChild(option);
+            }
+
+            // Trigger fee calculation immediately for current month
+            document.getElementById("amountText").textContent = getUpdatedAmountText();
         }
 
-        // Function to calculate late fee (example logic)
+        document.getElementById("monthSelect").addEventListener("change", () => {
+            document.getElementById("amountText").textContent = getUpdatedAmountText();
+        });
+
+        function getUpdatedAmountText() {
+            const lateFee = getLateFee();
+            const total = baseAmount + lateFee;
+            return `Click or Scan to Pay ₹${total} (₹${baseAmount} + ₹${lateFee} late fee)`;
+        }
+
+        function openUPIPayment() {
+            const selectedMonth = document.getElementById("monthSelect").value;
+            if (!selectedMonth) {
+                alert("Please select a month to pay for.");
+                return;
+            }
+
+            const lateFee = getLateFee();
+            const total = baseAmount + lateFee;
+            const upiLink = `upi://pay?pa=nagesh241299-4@okicici&pn=Nagesh&am=${total}&cu=INR`;
+            window.location.href = upiLink;
+        }
+
         function getLateFee() {
-            const dueDate = new Date();
-            dueDate.setDate(5); // Due date is 5th of the month
-            dueDate.setHours(0, 0, 0, 0);
+            const selectedMonth = document.getElementById("monthSelect").value;
+            if (!selectedMonth) return 0;
 
+            const [year, month] = selectedMonth.split("-").map(Number);
+            const dueDate = new Date(year, month - 1, 5);
             const today = new Date();
-            const msLate = today - dueDate;
 
+            dueDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+
+            const msLate = today - dueDate;
             if (msLate <= 0) return 0;
 
             const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
-            return daysLate * 10; // ₹10 per day late fee
+            return daysLate * 10;
         }
+        generateLast5MonthsIncludingCurrent();
     </script>
-
 </body>
 
 </html>

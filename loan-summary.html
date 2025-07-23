@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,10 +41,12 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 16px;
-      min-width: 500px; /* ensures table is scrollable on small screens */
+      min-width: 500px;
+      /* ensures table is scrollable on small screens */
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px 15px;
       border-bottom: 1px solid #ddd;
       text-align: left;
@@ -90,7 +93,8 @@
         padding: 20px;
       }
 
-      th, td {
+      th,
+      td {
         padding: 8px 10px;
         font-size: 14px;
       }
@@ -101,6 +105,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h2>💼 Loan Summary (Table)</h2>
@@ -116,7 +121,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="4">Loading...</td></tr>
+          <tr>
+            <td colspan="4">Loading...</td>
+          </tr>
         </tbody>
         <tfoot>
           <tr>
@@ -154,11 +161,18 @@
         const rows = text.trim().split('\n').slice(1); // skip header row
 
         const tbody = document.querySelector("#loanTable tbody");
-        tbody.innerHTML = "";
+        tbody.innerHTML = ""; // Clear existing rows
 
         let totalAmount = 0;
 
-        rows.forEach(row => {
+        // Filter out rows with status 'Closed'
+        const filteredRows = rows.filter(row => {
+          const [name, amountStr, status, date] = row.split(',');
+          return status.trim().toLowerCase() !== 'closed'; // Skip "Closed" status rows
+        });
+
+        // Process remaining rows
+        filteredRows.forEach(row => {
           const [name, amountStr, status, date] = row.split(',');
 
           const amount = parseFloat(amountStr.trim()) || 0;
@@ -167,11 +181,11 @@
           const tr = document.createElement("tr");
 
           tr.innerHTML = `
-            <td>${name.trim()}</td>
-            <td>₹${amount.toLocaleString()}</td>
-            <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
-            <td>${formatDate(date.trim())}</td>
-          `;
+        <td>${name.trim()}</td>
+        <td>₹${amount.toLocaleString()}</td>
+        <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
+        <td>${formatDate(date.trim())}</td>
+      `;
 
           tbody.appendChild(tr);
         });
@@ -193,4 +207,5 @@
     loadLoans();
   </script>
 </body>
+
 </html>
