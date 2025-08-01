@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,6 +15,7 @@
       flex-direction: column;
       align-items: center;
     }
+
     .container {
       max-width: 700px;
       width: 100%;
@@ -23,44 +25,53 @@
       border-radius: 16px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
+
     h2 {
       text-align: center;
       color: #2e7d32;
       margin-bottom: 20px;
     }
+
     .table-container {
       width: 100%;
       overflow-x: auto;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 16px;
       min-width: 600px;
     }
+
     th,
     td {
       padding: 12px 15px;
       border-bottom: 1px solid #ddd;
       text-align: left;
     }
+
     th {
       background-color: #66bb6a;
       color: white;
       border-radius: 8px 8px 0 0;
     }
+
     tbody tr:hover {
       background-color: #e8f5e9;
     }
+
     .status-cleared {
       color: #888;
       font-style: italic;
     }
+
     tfoot td {
       font-weight: bold;
       background-color: #dcedc8;
       border-top: 2px solid #66bb6a;
     }
+
     .back-home {
       display: block;
       margin: 25px auto 0;
@@ -70,18 +81,22 @@
       text-decoration: none;
       max-width: 600px;
     }
+
     .back-home:hover {
       text-decoration: underline;
     }
+
     @media (max-width: 600px) {
       body {
         padding: 20px;
       }
+
       th,
       td {
         padding: 8px 10px;
         font-size: 14px;
       }
+
       h2 {
         font-size: 20px;
       }
@@ -91,6 +106,7 @@
   <!-- Include PapaParse from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
+
 <body>
   <div class="container">
     <h2>💼 Loan Summary</h2>
@@ -106,7 +122,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="5">Loading...</td></tr>
+          <tr>
+            <td colspan="5">Loading...</td>
+          </tr>
         </tbody>
         <tfoot>
           <tr>
@@ -179,16 +197,17 @@
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${name.trim()}</td>
-            <td>₹${amount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
+            <td>₹${amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
             <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
             <td>${formatDate(date)}</td>
-            <td>₹${totalAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
+            <td>₹${totalAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
           `;
           tbody.appendChild(tr);
         });
 
         // Update footer total
-        document.getElementById("totalAmount").textContent = `${totalAmountSum.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById("totalAmount").textContent = `₹${totalAmountSum.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+
 
       } catch (error) {
         const tbody = document.querySelector("#loanTable tbody");
@@ -201,4 +220,5 @@
     loadLoans();
   </script>
 </body>
+
 </html>
