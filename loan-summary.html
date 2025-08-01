@@ -108,7 +108,7 @@
 
 <body>
   <div class="container">
-    <h2>💼 Loan Summary (Table)</h2>
+    <h2>💼 Loan Summary</h2>
 
     <div class="table-container">
       <table id="loanTable">
@@ -118,6 +118,7 @@
             <th>Amount (₹)</th>
             <th>Status</th>
             <th>Date</th>
+            <th>Total Amount</th>
           </tr>
         </thead>
         <tbody>
@@ -129,7 +130,7 @@
           <tr>
             <td colspan="1">Total</td>
             <td id="totalAmount">₹0</td>
-            <td colspan="2"></td>
+            <td colspan="3"></td>
           </tr>
         </tfoot>
       </table>
@@ -173,36 +174,41 @@
 
         // Process remaining rows
         filteredRows.forEach(row => {
-          const [name, amountStr, status, date] = row.split(',');
+          const [name, amountStr, status, date, totalAmountStr] = row.split(',');
 
           const amount = parseFloat(amountStr.trim()) || 0;
           totalAmount += amount;
 
+          // Parse Total Amount column from CSV (show as is)
+          const totalAmountValue = totalAmountStr ? totalAmountStr.trim() : '';
+
           const tr = document.createElement("tr");
 
           tr.innerHTML = `
-        <td>${name.trim()}</td>
-        <td>₹${amount.toLocaleString()}</td>
-        <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
-        <td>${formatDate(date.trim())}</td>
-      `;
+            <td>${name.trim()}</td>
+            <td>₹${amount.toLocaleString()}</td>
+            <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
+            <td>${formatDate(date.trim())}</td>
+            <td>₹${totalAmountValue}</td>
+          `;
 
           tbody.appendChild(tr);
         });
 
         if (tbody.children.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4">No loans found.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5">No loans found.</td></tr>`;
           document.getElementById("totalAmount").textContent = "₹0";
         } else {
           document.getElementById("totalAmount").textContent = `₹${totalAmount.toLocaleString()}`;
         }
       } catch (err) {
         const tbody = document.querySelector("#loanTable tbody");
-        tbody.innerHTML = `<tr><td colspan="4">⚠️ Failed to load data.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5">⚠️ Failed to load data.</td></tr>`;
         document.getElementById("totalAmount").textContent = "₹0";
         console.error("Error loading loan data:", err);
       }
     }
+
 
     loadLoans();
   </script>

@@ -119,7 +119,7 @@
         const grandTotal = data["grandTotal"] || 0;
         const loanDistributed = data["loanDistributed"] || 0;
         const available = grandTotal - loanDistributed;
-        const limit = grandTotal / 11;
+        const limit = data["limit"] || 0;
 
         displayMoney("grandTotal", grandTotal);
         displayMoney("loanDistributed", loanDistributed);
