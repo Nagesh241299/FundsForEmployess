@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Funds Overview</title>
   <style>
     body {
@@ -24,12 +25,35 @@
       width: 350px;
     }
 
-    h1 { margin-bottom: 25px; color: #333; }
-    .section { margin-bottom: 20px; }
-    .label { font-size: 16px; color: #666; }
-    .value { font-size: 28px; font-weight: bold; color: #007BFF; }
-    .grand .value { color: #28a745; }
-    .last-updated { margin-top: 20px; font-size: 14px; color: #777; }
+    h1 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .label {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #007BFF;
+    }
+
+    .grand .value {
+      color: #28a745;
+    }
+
+    .last-updated {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #777;
+    }
 
     a {
       display: inline-block;
@@ -43,6 +67,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="box">
     <h1>Funds Overview</h1>
@@ -60,6 +85,11 @@
     <div class="section">
       <div class="label">Available Balance</div>
       <div class="value" id="availableBalance">₹ --</div>
+    </div>
+
+    <div class="section">
+      <div class="label">Limit</div>
+      <div class="value" id="limitValue">₹ --</div>
     </div>
 
     <div class="last-updated" id="lastUpdated">Last updated: --</div>
@@ -89,10 +119,12 @@
         const grandTotal = data["grandTotal"] || 0;
         const loanDistributed = data["loanDistributed"] || 0;
         const available = grandTotal - loanDistributed;
+        const limit = grandTotal / 11;
 
         displayMoney("grandTotal", grandTotal);
         displayMoney("loanDistributed", loanDistributed);
         displayMoney("availableBalance", available);
+        displayMoney("limitValue", limit);
 
         document.getElementById("lastUpdated").textContent = "Last updated: " +
           new Date().toLocaleDateString("en-IN", {
@@ -110,4 +142,5 @@
     loadData();
   </script>
 </body>
+
 </html>
