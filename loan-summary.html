@@ -158,8 +158,15 @@
       try {
         const res = await fetch(CSV_URL);
         if (!res.ok) throw new Error("Network response was not ok");
-        const text = await res.text();
-        const rows = text.trim().split('\n').slice(1); // skip header row
+        const csvText = await res.text();
+
+        // Use PapaParse to parse CSV properly
+        const results = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+
+        const data = results.data; // array of objects
 
         const tbody = document.querySelector("#loanTable tbody");
         tbody.innerHTML = ""; // Clear existing rows
@@ -167,30 +174,27 @@
         let totalAmount = 0;
 
         // Filter out rows with status 'Closed'
-        const filteredRows = rows.filter(row => {
-          const [name, amountStr, status, date] = row.split(',');
-          return status.trim().toLowerCase() !== 'closed'; // Skip "Closed" status rows
-        });
+        const filteredRows = data.filter(row => row.Status.trim().toLowerCase() !== 'closed');
 
-        // Process remaining rows
         filteredRows.forEach(row => {
-          const [name, amountStr, status, date, totalAmountStr] = row.split(',');
+          const name = row.Name || '';
+          const amountStr = row.Amount || '0';
+          const status = row.Status || '';
+          const date = row.Date || '';
+          const totalAmountStr = row['Total Amount'] || '';
 
-          const amount = parseFloat(amountStr.trim()) || 0;
+          const amount = parseFloat(amountStr) || 0;
           totalAmount += amount;
-
-          // Parse Total Amount column from CSV (show as is)
-          const totalAmountValue = totalAmountStr ? totalAmountStr.trim() : '';
 
           const tr = document.createElement("tr");
 
           tr.innerHTML = `
-            <td>${name.trim()}</td>
-            <td>₹${amount.toLocaleString()}</td>
-            <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
-            <td>${formatDate(date.trim())}</td>
-            <td>₹${totalAmountValue}</td>
-          `;
+        <td>${name.trim()}</td>
+        <td>₹${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
+        <td>${formatDate(date.trim())}</td>
+        <td>₹${parseFloat(totalAmountStr).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+      `;
 
           tbody.appendChild(tr);
         });
@@ -199,7 +203,7 @@
           tbody.innerHTML = `<tr><td colspan="5">No loans found.</td></tr>`;
           document.getElementById("totalAmount").textContent = "₹0";
         } else {
-          document.getElementById("totalAmount").textContent = `₹${totalAmount.toLocaleString()}`;
+          document.getElementById("totalAmount").textContent = `₹${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
       } catch (err) {
         const tbody = document.querySelector("#loanTable tbody");
