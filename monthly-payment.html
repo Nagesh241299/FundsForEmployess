@@ -83,12 +83,7 @@
       width: 100%;
       max-width: 250px;
       border-radius: 15px;
-      transition: transform 0.3s ease;
       margin-top: 10px;
-    }
-
-    #qr img:hover {
-      transform: scale(1.05);
     }
 
     p {
@@ -111,6 +106,12 @@
 
     .btn:hover {
       background-color: #02a88c;
+    }
+
+    #paymentResult {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ffff99;
     }
 
     @media (max-width: 600px) {
@@ -149,17 +150,16 @@
     <h2>Monthly Payment</h2>
 
     <div class="custom-select">
-      <select id="monthSelect">
-        <!-- months will be added via JavaScript -->
-      </select>
+      <select id="monthSelect"></select>
     </div>
 
     <div id="qr">
       <img src="your-qr-code.jpeg" alt="QR Code" />
-      <p id="amountText">Click "Pay Now" to pay ₹500</p>
+      <p id="amountText">Pay ₹500 + late fee if any</p>
     </div>
 
-    <a href="javascript:void(0)" class="btn" onclick="openUPIPayment()">Pay Now</a>
+    <button class="btn" onclick="openUPI()">Pay Now</button>
+    <div id="paymentResult"></div>
   </div>
 
   <script>
@@ -186,32 +186,13 @@
         select.appendChild(option);
       }
 
-      // Trigger fee calculation immediately for current month
       document.getElementById("amountText").textContent = getUpdatedAmountText();
     }
 
     document.getElementById("monthSelect").addEventListener("change", () => {
       document.getElementById("amountText").textContent = getUpdatedAmountText();
+      document.getElementById("paymentResult").textContent = "";
     });
-
-    function getUpdatedAmountText() {
-      const lateFee = getLateFee();
-      const total = baseAmount + lateFee;
-      return `Click "Pay Now" to pay ₹${total} (₹${baseAmount} + ₹${lateFee} late fee)`;
-    }
-
-    function openUPIPayment() {
-      const selectedMonth = document.getElementById("monthSelect").value;
-      if (!selectedMonth) {
-        alert("Please select a month to pay for.");
-        return;
-      }
-
-      const lateFee = getLateFee();
-      const total = baseAmount + lateFee;
-      const upiLink = `upi://pay?pa=nagesh241299-6@oksbi&pn=Nagesh&am=${total}&cu=INR`;
-      window.location.href = upiLink;
-    }
 
     function getLateFee() {
       const selectedMonth = document.getElementById("monthSelect").value;
@@ -229,6 +210,27 @@
 
       const daysLate = Math.floor(msLate / (1000 * 60 * 60 * 24));
       return daysLate * 10;
+    }
+
+    function getUpdatedAmountText() {
+      const lateFee = getLateFee();
+      return `Pay ₹${baseAmount} + ₹${lateFee} late fee`;
+    }
+
+    function openUPI() {
+      const upiId = "nagesh241299-6@oksbi";
+      const name = "Nagesh";
+
+      // Generate UPI URI without amount
+      const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&cu=INR`;
+
+      // Optional: display total for user info
+      const lateFee = getLateFee();
+      const total = baseAmount + lateFee;
+      document.getElementById("paymentResult").textContent = `Total due: ₹${total} (enter manually in UPI app)`;
+
+      // Open UPI payment
+      window.location.href = upiLink;
     }
 
     generateLast5MonthsIncludingCurrent();
