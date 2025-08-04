@@ -222,21 +222,21 @@
       return `Pay ₹${baseAmount} + ₹${lateFee} late fee`;
     }
 
-    function openUPI() {
-      const upiId = "nagesh241299-6@oksbi";
-      const name = "Nagesh";
+    // function openUPI() {
+    //   const upiId = "nagesh241299-6@oksbi";
+    //   const name = "Nagesh";
 
-      // Generate UPI URI without amount
-      const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&cu=INR`;
+    //   // Generate UPI URI without amount
+    //   const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&cu=INR`;
 
-      // Optional: display total for user info
-      const lateFee = getLateFee();
-      const total = baseAmount + lateFee;
-      document.getElementById("paymentResult").textContent = `Total due: ₹${total} (enter manually in UPI app)`;
+    //   // Optional: display total for user info
+    //   const lateFee = getLateFee();
+    //   const total = baseAmount + lateFee;
+    //   document.getElementById("paymentResult").textContent = `Total due: ₹${total} (enter manually in UPI app)`;
 
-      // Open UPI payment
-      window.location.href = upiLink;
-    }
+    //   // Open UPI payment
+    //   window.location.href = upiLink;
+    // }
 
     generateLast5MonthsIncludingCurrent();
   </script>
