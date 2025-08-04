@@ -159,9 +159,11 @@
     </div>
 
     <div style="text-align: center; margin-top: 20px;">
-      <button class="btn" onclick="openUPI()">💰 Pay Now</button>
-
+      <a href="upi://pay?pa=nagesh241299-6@oksbi&pn=Nagesh%20Payment&cu=INR" class="btn">
+        💰 Pay Now
+      </a>
     </div>
+
     <div id="paymentResult"></div>
   </div>
 
@@ -221,21 +223,6 @@
       return `Total Due: ₹${baseAmount} + ₹${lateFee} late fee = ₹${total}`;
     }
 
-    function openUPI() {
-      const upiId = "nagesh241299-6@oksbi";
-      const name = "Nagesh";
-
-      // Generate UPI URI without amount
-      const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&cu=INR`;
-
-      // Optional: display total for user info
-      const lateFee = getLateFee();
-      const total = baseAmount + lateFee;
-      document.getElementById("paymentResult").textContent = `Total due: ₹${total} (enter manually in UPI app)`;
-
-      // Open UPI payment
-      window.location.href = upiLink;
-    }
 
     generateLast5MonthsIncludingCurrent();
   </script>
