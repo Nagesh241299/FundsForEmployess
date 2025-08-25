@@ -61,11 +61,6 @@
       background-color: #e8f5e9;
     }
 
-    .status-cleared {
-      color: #888;
-      font-style: italic;
-    }
-
     tfoot td {
       font-weight: bold;
       background-color: #dcedc8;
@@ -116,21 +111,20 @@
           <tr>
             <th>Name</th>
             <th>Amount (₹)</th>
-            <th>Status</th>
             <th>Date</th>
             <th>Total Amount</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td colspan="5">Loading...</td>
+            <td colspan="4">Loading...</td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
             <td>Total</td>
             <td id="totalAmount">0</td>
-            <td colspan="3"></td>
+            <td colspan="2"></td>
           </tr>
         </tfoot>
       </table>
@@ -167,27 +161,25 @@
         if (!res.ok) throw new Error("Network response was not ok");
         const csvText = await res.text();
 
-        // Parse CSV using PapaParse with header option
         const results = Papa.parse(csvText, {
           header: true,
           skipEmptyLines: true,
-          dynamicTyping: true // converts numbers automatically
+          dynamicTyping: true
         });
 
         const data = results.data;
 
         const tbody = document.querySelector("#loanTable tbody");
-        tbody.innerHTML = ""; // clear existing rows
+        tbody.innerHTML = "";
 
         let totalAmountSum = 0;
 
-        // Filter rows where Status is NOT 'Closed'
         const filteredRows = data.filter(row => {
           return row.Status && row.Status.trim().toLowerCase() !== 'closed';
         });
 
         if (filteredRows.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5">No loans found.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4">No loans found.</td></tr>`;
           document.getElementById("totalAmount").textContent = "0";
           return;
         }
@@ -195,7 +187,6 @@
         filteredRows.forEach(row => {
           const name = row.Name || '';
           const amount = parseFloat(row.Amount) || 0;
-          const status = row.Status || '';
           const date = row.Date || '';
           const totalAmount = parseFloat(row['Total Amount']) || 0;
 
@@ -205,20 +196,17 @@
           tr.innerHTML = `
             <td>${name.trim()}</td>
             <td>₹${amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
-            <td class="${status.trim().toLowerCase() === 'cleared' ? 'status-cleared' : ''}">${status.trim()}</td>
             <td>${formatDate(date)}</td>
             <td>₹${totalAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
           `;
           tbody.appendChild(tr);
         });
 
-        // Update footer total
         document.getElementById("totalAmount").textContent = `₹${totalAmountSum.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-
 
       } catch (error) {
         const tbody = document.querySelector("#loanTable tbody");
-        tbody.innerHTML = `<tr><td colspan="5">⚠️ Failed to load data.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4">⚠️ Failed to load data.</td></tr>`;
         document.getElementById("totalAmount").textContent = "0";
         console.error("Error loading loan data:", error);
       }
